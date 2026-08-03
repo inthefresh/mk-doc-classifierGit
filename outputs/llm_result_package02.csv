@@ -1,0 +1,21 @@
+page_idx,label,confidence,reasoning
+0,TITLE_REPORT,high,The content describes a Commitment for Title Insurance which includes standard elements such as legal property descriptions and mentions of schedules for requirements and exceptions.
+2,TITLE_REPORT,high,"The content explicitly refers to a Commitment for Title Insurance issued by an established title company, which directly categorizes it as a title report."
+4,TITLE_REPORT,high,"The page contains content related to a Commitment for Title Insurance, including references to specific title insurance requirements and exceptions typical of title/escrow documents."
+6,TITLE_REPORT,high,"The content clearly refers to a Commitment for Title Insurance, which is a standard type of title report that includes references to recorded documents and conditions."
+8,TITLE_REPORT,high,"The page is from a Commitment for Title Insurance and includes requirements and references to title insurance specifics, which are standard components of a title report."
+10,TITLE_REPORT,high,"This page contains references to a title commitment and legal descriptions, which are typical contents of a title report."
+11,INCOME_DOC,high,"The page contains a Wage and Income Transcript with details from a W-2 form, indicating it is an income/employment verification document."
+14,TITLE_REPORT,high,"The page contains detailed information regarding a Commitment for Title Insurance, including requirements and exceptions which are standard content of a title report."
+16,TITLE_REPORT,high,"The page details a Commitment for Title Insurance issued by First American Title Insurance Company, which includes legal property descriptions and insurance specifics, making it an official title report."
+21,TITLE_REPORT,high,"The text contains details about a 'Commitment for Title Insurance' along with exceptions and provisions related to property title insurance, which is characteristic of title report documents."
+25,TITLE_REPORT,high,"The page contains commitment conditions typical of a title insurance commitment, identifying the obligations and limitations of the title company."
+26,INCOME_DOC,high,"The page contains detailed wage information along with a Form W-2 Wage and Tax Statement, which is typical for income and employment verification."
+29,TITLE_REPORT,high,The page contains information about a chain of title report including details of recorded deeds and is consistent with title report documentation.
+30,INCOME_DOC,high,"The page contains W-2 information, including wages and tax withholdings, which are typical components of income/employment verification documents."
+31,CREDIT_REPORT,high,"The text contains references to a report issued by a credit bureau (Experian), which indicates it is a credit report."
+32,TITLE_REPORT,high,"The content refers to an ALTA Commitment for Title Insurance, detailing requirements and exceptions, which is characteristic of a title report."
+35,INCOME_DOC,high,"The page provides a summary of W-2 income information for an applicant, which classifies it as an income documentation piece."
+38,OTHER,medium,The text does not provide specific content related to any of the defined categories and appears to include a reference to taxpayer data without clear document type.
+39,TITLE_REPORT,high,"The content discusses limitations of liability and is typical of a title insurance commitment, which includes legal obligations and conditions for the coverage of the property."
+41,TITLE_REPORT,high,"The document contains commitments and legal descriptions typical of a Commitment for Title Insurance, indicating it falls under the title report category."

@@ -32,8 +32,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 OUTPUT_DIR = PROJECT_ROOT / "outputs"
 
-TEXT_MODEL = "gpt-4.1-mini"
-VISION_MODEL = "gpt-4o-mini"
+MODEL = "gpt-4o-mini"
 RENDER_DPI = 300
 
 PACKAGE_PDFS = {
@@ -88,7 +87,7 @@ def render_page_image_b64(pdf_path: Path, page_idx: int, dpi: int = RENDER_DPI) 
 
 def classify_text_page(client: OpenAI, text: str) -> PageClassification:
     completion = client.chat.completions.parse(
-        model=TEXT_MODEL,
+        model=MODEL,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": f"Page text:\n{text}"},
@@ -100,7 +99,7 @@ def classify_text_page(client: OpenAI, text: str) -> PageClassification:
 
 def classify_image_page(client: OpenAI, image_b64: str) -> PageClassification:
     completion = client.chat.completions.parse(
-        model=VISION_MODEL,
+        model=MODEL,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {

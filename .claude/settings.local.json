@@ -14,7 +14,8 @@
       "Bash(cp outputs/package02_pages.json outputs/package02_pages.pdfplumber.bak.json)",
       "Bash(python -m pip install openai pymupdf python-dotenv)",
       "Bash(python src/llm_classify.py)",
-      "Bash(python -c \"import os; v = os.environ.get\\('OPENAI_API_KEY'\\); print\\('set' if v else 'not set', len\\(v\\) if v else 0\\)\")"
+      "Bash(python -c \"import os; v = os.environ.get\\('OPENAI_API_KEY'\\); print\\('set' if v else 'not set', len\\(v\\) if v else 0\\)\")",
+      "Read(//tmp/**)"
     ]
   }
 }
