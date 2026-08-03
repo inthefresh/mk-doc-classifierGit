@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//f/SJH/WorkSpace/MKLending/**)",
+      "Read(//f/SJH/WorkSpace/**)",
+      "Bash(python -m pip list)",
+      "Bash(python -m pip install pypdf)",
+      "Bash(python src/build_ground_truth.py)"
+    ]
+  }
+}
