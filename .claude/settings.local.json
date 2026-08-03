@@ -15,7 +15,11 @@
       "Bash(python -m pip install openai pymupdf python-dotenv)",
       "Bash(python src/llm_classify.py)",
       "Bash(python -c \"import os; v = os.environ.get\\('OPENAI_API_KEY'\\); print\\('set' if v else 'not set', len\\(v\\) if v else 0\\)\")",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(python src/grouping.py)",
+      "Bash(rm -f outputs/documents_package01.csv outputs/documents_package02.csv)",
+      "Bash(cat /tmp_out.txt)",
+      "Bash(python -c \"print\\(open\\(r'/tmp_out.txt', encoding='utf-8'\\).read\\(\\)\\)\")"
     ]
   }
 }
