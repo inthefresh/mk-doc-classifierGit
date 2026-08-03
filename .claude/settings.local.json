@@ -5,7 +5,16 @@
       "Read(//f/SJH/WorkSpace/**)",
       "Bash(python -m pip list)",
       "Bash(python -m pip install pypdf)",
-      "Bash(python src/build_ground_truth.py)"
+      "Bash(python src/build_ground_truth.py)",
+      "Bash(python -m pip install pdfplumber)",
+      "Bash(python src/extract.py)",
+      "Bash(python -c ' *)",
+      "Bash(python src/rules.py)",
+      "Bash(cp outputs/package01_pages.json outputs/package01_pages.pdfplumber.bak.json)",
+      "Bash(cp outputs/package02_pages.json outputs/package02_pages.pdfplumber.bak.json)",
+      "Bash(python -m pip install openai pymupdf python-dotenv)",
+      "Bash(python src/llm_classify.py)",
+      "Bash(python -c \"import os; v = os.environ.get\\('OPENAI_API_KEY'\\); print\\('set' if v else 'not set', len\\(v\\) if v else 0\\)\")"
     ]
   }
 }
