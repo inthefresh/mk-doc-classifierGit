@@ -20,7 +20,12 @@
       "Bash(rm -f outputs/documents_package01.csv outputs/documents_package02.csv)",
       "Bash(cat /tmp_out.txt)",
       "Bash(python -c \"print\\(open\\(r'/tmp_out.txt', encoding='utf-8'\\).read\\(\\)\\)\")",
-      "Bash(python src/evaluate.py)"
+      "Bash(python src/evaluate.py)",
+      "Bash(python -m pip install matplotlib)",
+      "Bash(python src/summarize_package02.py)",
+      "Bash(python -m venv 'C:\\\\Users\\\\신지혁\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\F--SJH-WorkSpace-MKLending-mk-doc-classifier\\\\52273803-f2a8-4e26-b6d9-24474975f8ca\\\\scratchpad/repro_venv')",
+      "Bash(echo \"exit=$?\")",
+      "Bash('C:\\\\Users\\\\신지혁\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\F--SJH-WorkSpace-MKLending-mk-doc-classifier\\\\52273803-f2a8-4e26-b6d9-24474975f8ca\\\\scratchpad/repro_venv/Scripts/python.exe' --version)"
     ]
   }
 }

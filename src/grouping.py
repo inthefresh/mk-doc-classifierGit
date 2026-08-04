@@ -40,6 +40,36 @@ PAGE_OF_PATTERN = re.compile(r"Page\s+(\d+)\s*(?:of\s*(\d+))?", re.IGNORECASE)
 # Bare "3 of 10" footer (form code glued to the left, e.g. "GURLA20S3 of 11").
 BARE_OF_PATTERN = re.compile(r"(?<!\d)(\d{1,3})\s+of\s+(\d{1,3})(?!\d)", re.IGNORECASE)
 
+# INCOME_DOC-only secondary clustering keys (IRS Wage and Income Transcript pages).
+# "Tax Period Requested" only appears on a transcript's own first page; the
+# masked EIN suffix ("XX-XXX7732") repeats on every page of that same
+# transcript instance, including continuation pages, so it's used to link
+# continuation pages back to the header page that carries the tax period.
+TAX_PERIOD_PATTERN = re.compile(r"Tax Period Requested:\s*([\d-]+)")
+EIN_SUFFIX_PATTERN = re.compile(r"XX-XXX(\d{4})")
+
+# Known correction applied post-hoc at the grouping stage (see README): this
+# page's own text is too sparse (97 chars, no EIN, no tax period -- just
+# boilerplate + "PAGE 2 OF 2") for rules.py/llm_classify.py or the automatic
+# EIN-matching below to place it. Confirmed by manual review of the source
+# PDF that it is the second page of the 2024 Wage and Income Transcript.
+INCOME_DOC_MANUAL_TAX_PERIOD = {
+    38: "12-31-2024",
+}
+
+KNOWN_LABEL_CORRECTIONS = {
+    "package02": {
+        38: {
+            "label": "INCOME_DOC",
+            "reason": (
+                "text too sparse for rules/LLM (just boilerplate + 'PAGE 2 OF 2'); "
+                "confirmed via grouping-stage reconstruction (see INCOME_DOC_MANUAL_TAX_PERIOD) "
+                "to be page 2 of the 2024 Wage and Income Transcript alongside page_idx=11"
+            ),
+        },
+    },
+}
+
 
 def extract_page_number(text: str) -> tuple[int | None, int | None]:
     """Returns (current_page, total_pages); total_pages may be None."""
@@ -62,6 +92,33 @@ def load_final_result(package_name: str) -> list[dict]:
         return list(csv.DictReader(f))
 
 
+def write_final_result(rows: list[dict], output_path: Path) -> None:
+    with output_path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["page_idx", "label", "source"])
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def apply_known_corrections(package_name: str, rows: list[dict]) -> tuple[list[dict], bool]:
+    corrections = KNOWN_LABEL_CORRECTIONS.get(package_name, {})
+    if not corrections:
+        return rows, False
+
+    changed = False
+    for row in rows:
+        page_idx = int(row["page_idx"])
+        correction = corrections.get(page_idx)
+        if correction and row["label"] != correction["label"]:
+            logger.warning(
+                "%s page_idx=%s: relabeled %s -> %s (grouping-stage correction: %s)",
+                package_name, page_idx, row["label"], correction["label"], correction["reason"],
+            )
+            row["label"] = correction["label"]
+            row["source"] = "grouping_correction"
+            changed = True
+    return rows, changed
+
+
 def load_pages_text(package_name: str) -> dict[int, str]:
     path = OUTPUT_DIR / f"{package_name}_pages.json"
     with path.open(encoding="utf-8") as f:
@@ -75,7 +132,7 @@ def group_by_label(rows: list[dict]) -> dict[str, list[int]]:
     return groups
 
 
-def reconstruct_label(label: str, page_idxs: list[int], pages_text: dict[int, str]) -> list[dict]:
+def reconstruct_label_generic(label: str, page_idxs: list[int], pages_text: dict[int, str]) -> list[dict]:
     numbered: dict[int | None, list[tuple[int, int]]] = {}
     unnumbered: list[int] = []
 
@@ -110,6 +167,120 @@ def reconstruct_label(label: str, page_idxs: list[int], pages_text: dict[int, st
             "total_pages_declared": None,
             "ordering_method": "unordered_single",
         })
+    return sub_docs
+
+
+def reconstruct_income_doc(page_idxs: list[int], pages_text: dict[int, str]) -> list[dict]:
+    """INCOME_DOC-only: secondary-cluster each total_pages_declared bucket by
+    tax period, so pages from different Wage and Income Transcript instances
+    (e.g. two tax years) aren't merged just because they share the same total.
+    """
+    numbered: dict[int | None, list[tuple[int, int]]] = {}
+    unnumbered: list[int] = []
+
+    for page_idx in page_idxs:
+        current, total = extract_page_number(pages_text[page_idx])
+        if current is None:
+            unnumbered.append(page_idx)
+        else:
+            numbered.setdefault(total, []).append((current, page_idx))
+
+    sub_docs = []
+    for total, entries in numbered.items():
+        if total is None:
+            # No declared total to sub-cluster by -- fall back to generic handling.
+            entries.sort(key=lambda entry: entry[0])
+            sub_docs.append({
+                "label": "INCOME_DOC",
+                "ordered_page_indices": [page_idx for _, page_idx in entries],
+                "total_pages_declared": total,
+                "ordering_method": "page_number",
+            })
+            continue
+
+        tax_period_of: dict[int, str] = {}
+        ein_suffix_of: dict[int, str] = {}
+        for _, page_idx in entries:
+            text = pages_text[page_idx]
+            tp_match = TAX_PERIOD_PATTERN.search(text)
+            if tp_match:
+                tax_period_of[page_idx] = tp_match.group(1)
+            ein_match = EIN_SUFFIX_PATTERN.search(text)
+            if ein_match:
+                ein_suffix_of[page_idx] = ein_match.group(1)
+
+        # Link continuation pages (no tax period of their own) to a header
+        # page's tax period via shared masked EIN suffix.
+        ein_to_tax_period = {
+            ein_suffix_of[pid]: tp for pid, tp in tax_period_of.items() if pid in ein_suffix_of
+        }
+        for _, page_idx in entries:
+            if page_idx in tax_period_of:
+                continue
+            ein = ein_suffix_of.get(page_idx)
+            if ein and ein in ein_to_tax_period:
+                tax_period_of[page_idx] = ein_to_tax_period[ein]
+                logger.info(
+                    "INCOME_DOC total=%s: page_idx=%s linked to tax_period=%s via matching EIN suffix %s",
+                    total, page_idx, tax_period_of[page_idx], ein,
+                )
+
+        # Last resort: the one manually-verified case with no in-text signal at all.
+        for _, page_idx in entries:
+            if page_idx not in tax_period_of and page_idx in INCOME_DOC_MANUAL_TAX_PERIOD:
+                tax_period_of[page_idx] = INCOME_DOC_MANUAL_TAX_PERIOD[page_idx]
+                logger.warning(
+                    "INCOME_DOC total=%s: page_idx=%s has no in-text signal, "
+                    "assigned tax_period=%s from manual verification",
+                    total, page_idx, tax_period_of[page_idx],
+                )
+
+        clusters: dict[str, list[tuple[int, int]]] = {}
+        unresolved: list[tuple[int, int]] = []
+        for current, page_idx in entries:
+            tax_period = tax_period_of.get(page_idx)
+            if tax_period is None:
+                unresolved.append((current, page_idx))
+            else:
+                clusters.setdefault(tax_period, []).append((current, page_idx))
+
+        for tax_period, members in clusters.items():
+            members.sort(key=lambda entry: entry[0])
+            sub_docs.append({
+                "label": "INCOME_DOC",
+                "ordered_page_indices": [page_idx for _, page_idx in members],
+                "total_pages_declared": total,
+                "ordering_method": "page_number",
+            })
+
+        for current, page_idx in unresolved:
+            logger.warning(
+                "INCOME_DOC total=%s: page_idx=%s (current=%s) has no tax-period clue -- "
+                "left as unassigned INCOME_DOC PAGE %s",
+                total, page_idx, current, current,
+            )
+            sub_docs.append({
+                "label": "INCOME_DOC",
+                "ordered_page_indices": [page_idx],
+                "total_pages_declared": None,
+                "ordering_method": "unassigned",
+            })
+
+    for page_idx in unnumbered:
+        sub_docs.append({
+            "label": "INCOME_DOC",
+            "ordered_page_indices": [page_idx],
+            "total_pages_declared": None,
+            "ordering_method": "unordered_single",
+        })
+    return sub_docs
+
+
+def reconstruct_label(label: str, page_idxs: list[int], pages_text: dict[int, str]) -> list[dict]:
+    if label == "INCOME_DOC":
+        sub_docs = reconstruct_income_doc(page_idxs, pages_text)
+    else:
+        sub_docs = reconstruct_label_generic(label, page_idxs, pages_text)
 
     sub_docs.sort(key=lambda d: min(d["ordered_page_indices"]))
     for i, sub_doc in enumerate(sub_docs, start=1):
@@ -136,6 +307,12 @@ def write_reconstructed_docs(sub_docs: list[dict], output_path: Path) -> None:
 
 def process_package(package_name: str) -> list[dict]:
     rows = load_final_result(package_name)
+    rows, corrected = apply_known_corrections(package_name, rows)
+    if corrected:
+        final_result_path = OUTPUT_DIR / f"final_result_{package_name}.csv"
+        write_final_result(rows, final_result_path)
+        logger.info("%s: applied known label correction(s), rewrote %s", package_name, final_result_path)
+
     pages_text = load_pages_text(package_name)
     label_groups = group_by_label(rows)
 

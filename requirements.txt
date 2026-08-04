@@ -1,5 +1,5 @@
 pypdf>=6.0
-pandas>=2.0
 openai>=2.0
 pymupdf>=1.28
 python-dotenv>=1.2
+matplotlib>=3.11

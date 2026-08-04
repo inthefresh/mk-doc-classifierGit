@@ -37,7 +37,7 @@ page_idx,label,source
 35,INCOME_DOC,llm
 36,URLA_1003,rule
 37,CREDIT_REPORT,rule
-38,OTHER,llm
+38,INCOME_DOC,grouping_correction
 39,TITLE_REPORT,llm
 40,CREDIT_REPORT,rule
 41,TITLE_REPORT,llm
