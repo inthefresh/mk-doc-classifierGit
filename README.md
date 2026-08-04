@@ -75,10 +75,13 @@ python src/summarize_package02.py  # Phase 7 -> summary_package02.md, package02_
 - 저텍스트(50자 미만) 페이지는 규칙 매칭 자체를 시도하지 않고 바로
   `UNCERTAIN`(`reason=low_text`)으로 분류해 다음 단계(LLM vision)로 넘긴다.
 
-**LLM: OpenAI `gpt-4o-mini` 단일 모델.** 텍스트 입력, 이미지 입력(vision),
-structured output(JSON schema strict)을 전부 지원하는 것을 확인했고,
-`gpt-4.1-mini`보다 저렴하면서 vision까지 커버하므로 입력 형태별로 모델을
-나눌 실익이 없어 통일했다(프롬프트·스키마 이중 관리 방지). API 호출은
+**LLM: OpenAI `gpt-4o-mini` 단일 모델.** 텍스트/이미지 입력을 모델
+하나로 통일하기로 한 뒤(프롬프트·스키마 이중 관리 방지), 어떤 모델로
+통일할지는 `gpt-4o-mini`와 `gpt-4.1-mini` 둘 다 vision을 지원한다는
+점을 확인한 후, 가격(4o-mini $0.15/$0.60 vs 4.1-mini $0.40/$1.60)과
+structured output(JSON schema strict) 지원 확실성(4o-mini는 공식
+문서로 명확히 확인됨, 4.1-mini는 커뮤니티에서 지원 여부에 대한 상반된
+리포트가 있어 불확실)을 근거로 `gpt-4o-mini`를 선택했다. API 호출은
 `temperature=0`으로 고정했는데, 이는 애초 설계가 아니라 **Phase 8
 재현성 검증 중 발견한 문제에 대한 사후 수정**이다(5절 참고).
 
