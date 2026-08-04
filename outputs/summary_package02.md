@@ -21,7 +21,7 @@
 
 ## Sub-documents
 
-| label | sub_doc_id | start_page | end_page | page_count | total_pages_declared | ordering_method |
+| label | sub_doc_id | first_page_idx | last_page_idx | page_count | total_pages_declared | ordering_method |
 |---|---|---|---|---|---|---|
 | CREDIT_REPORT | CREDIT_REPORT_1 | 1 | 1 | 1 | - | unordered_single |
 | CREDIT_REPORT | CREDIT_REPORT_2 | 3 | 3 | 1 | - | unordered_single |
