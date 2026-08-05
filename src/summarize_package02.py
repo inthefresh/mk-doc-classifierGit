@@ -64,7 +64,9 @@ def build_summary_md(final_rows: list[dict], sub_docs: list[dict], llm_rows: lis
 
     lines.append("## Sub-documents")
     lines.append("")
-    lines.append("| label | sub_doc_id | start_page | end_page | page_count | total_pages_declared | ordering_method |")
+    lines.append("*first_page_idx/last_page_idx: 정렬된 페이지 리스트의 첫/마지막 원소.*")
+    lines.append("")
+    lines.append("| label | sub_doc_id | first_page_idx | last_page_idx | page_count | total_pages_declared | ordering_method |")
     lines.append("|---|---|---|---|---|---|---|")
     for d in sub_docs:
         indices = [int(x) for x in d["ordered_page_indices"].split(",")]

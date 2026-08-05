@@ -11,6 +11,7 @@
 ```bash
 python -m venv .venv
 .venv\Scripts\activate          # Windows
+source .venv/bin/activate       # Mac/Linux
 pip install -r requirements.txt
 cp .env.example .env            # then fill in OPENAI_API_KEY=sk-...
 ```
@@ -65,9 +66,15 @@ python src/summarize_package02.py  # Phase 7 -> summary_package02.md, package02_
 - `CREDIT_REPORT` / `TITLE_REPORT`: 서로 다른 키워드가 2개 이상 매칭되어야
   확정. 임계값을 1로 하면 URLA 본문 안에 우연히 등장하는 `"credit score"`,
   `"escrow"` 같은 단어 하나만으로 오탐이 발생하는 것을 직접 확인해서
-  2로 설정했다. (CREDIT_REPORT 키워드셋은 최초 커버리지 검증이 "키워드
-  아무거나 1개"만 기준으로 이뤄져 실제 threshold=2 로직과 불일치했던 걸
-  나중에 발견해 키워드 4개를 보강했다 — 3절 Phase 3 참고.)
+  2로 설정했다. 임계값(2개 이상 매칭)은 설계 때부터 고정이었다. 문제는
+  코드 작성 전 사전 검증 방식에 있었다 — "키워드 아무거나 1개라도
+  있으면 커버"라는 기준으로 18/18 커버리지를 확인했는데, 이는 실제
+  임계값(서로 다른 키워드 2개 이상)보다 약한 조건이었다. 실제
+  `rules.py` 실행 결과 CREDIT_REPORT 18페이지 중 10페이지가
+  `"broomall"` 키워드 하나만 매칭되어 `UNCERTAIN`으로 빠졌고, 원인을
+  파악해 키워드 4개(`repositories`, `client code`,
+  `order verifications`, `xactus`)를 보강해 18/18 전부 임계값을
+  통과하도록 수정했다.
 - `INCOME_DOC`: 규칙 없음. package_01에 P&L 샘플이 1건뿐이라 W-2/1040/
   VOE 같은 일반화된 키워드를 검증 없이 추가하는 건 오탐·silent
   misclassification 리스크를 검증 불가능한 채로 안고 가는 것이라 판단해,
@@ -182,9 +189,11 @@ TITLE_REPORT 본문 8/8 전부 원본과 정확히 일치**했다. 번호 없는
   1차 클러스터링 키로 쓰고, 이 필드가 없는 연속 페이지는 EIN 접미사
   일치로 원래 인스턴스에 연결하도록 구현했다 — page_idx=30이 EIN
   접미사 `4415`로 page_idx=26(2025년)과 자동 매칭됐다. page_idx=38만은
-  텍스트가 97자(boilerplate뿐)라 두 신호 모두 없었는데, 원본 PDF를
-  직접 확인해 2024년 트랜스크립트의 2쪽(page_idx=11과 같은 문서)임을
-  수동으로 확정했다. 이 페이지는 애초에 Phase 4에서 텍스트 부족으로
+  텍스트가 97자(boilerplate뿐)라 두 신호 모두 없었는데, package_02
+  자신의 셔플본 PDF(`02.990367284_shuffled.pdf`)를 직접 열어 확인해
+  2024년 트랜스크립트의 2쪽(page_idx=11과 같은 문서)임을 수동으로
+  확정했다(package_01의 원본 문서를 참조한 게 아니다). 이 페이지는
+  애초에 Phase 4에서 텍스트 부족으로
   LLM이 `OTHER`로 오분류했던 페이지인데, 원인이 분류 모델의 오류가
   아니라 애초에 텍스트 단서 부족이었으므로 rules.py/llm_classify.py를
   재실행하지 않고 **그룹핑 단계에서 `INCOME_DOC`으로 재라벨링**했다
@@ -205,7 +214,13 @@ package_01(정답 있는 유일한 패키지)의 `final_result`를 `ground_truth
 정답이 없는 package_02의 결과를 제출 가능한 형태로 정리한다:
 라벨별 페이지 수·하위문서 개수, `source`(rule/llm/grouping_correction)
 비율, 하위문서별 시작/끝 페이지와 순서 복원 방식(`page_number`/
-`unordered_single`), 알려진 미해결 케이스(TITLE_REPORT 중복 병합) 목록을
+`unordered_single`/`unassigned` — `unassigned`는 INCOME_DOC 전용으로,
+`total_pages_declared`는 있으나 tax_period·EIN 접미사 단서가 둘 다 없어
+어느 인스턴스에 속하는지 특정하지 못한 경우를 위한 값이다. 실제
+package_02 결과에는 0건이었다 — page_idx=38이 자동 매칭에 걸리지
+않았던 유일한 케이스인데, 위 Phase 5에서 설명한 수동 확인으로 해결돼
+`unassigned`로 남지 않았다), 알려진 미해결 케이스(TITLE_REPORT 중복
+병합) 목록을
 `outputs/summary_package02.md`로 만들고, 44페이지 전체를 셔플된 순서
 그대로 라벨별로 색칠한 타임라인(`outputs/package02_visualization.png`)을
 그려 앞서 설명한 "라벨 연속 방지형 인터리빙" 셔플 패턴을 한눈에

@@ -21,6 +21,8 @@
 
 ## Sub-documents
 
+*first_page_idx/last_page_idx: 정렬된 페이지 리스트의 첫/마지막 원소.*
+
 | label | sub_doc_id | first_page_idx | last_page_idx | page_count | total_pages_declared | ordering_method |
 |---|---|---|---|---|---|---|
 | CREDIT_REPORT | CREDIT_REPORT_1 | 1 | 1 | 1 | - | unordered_single |
