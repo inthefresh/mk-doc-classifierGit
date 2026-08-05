@@ -1,0 +1,3 @@
+page_idx,actual,predicted,source,text_preview,confidence,reasoning
+7,TITLE_REPORT,OTHER,llm,[ Plat map removed in anonymized sample ][ Plat map removed in anonymized sample ],high,"The content indicates the removal of a plat map, which does not correspond to any of the defined document categories."
+35,INCOME_DOC,OTHER,llm,"Veronica Salazar Realtor $231,239.00 49,720.00 $181,519.00 9,715.00 5,583.00 3,319.00 1,300.00 2,242",medium,"The page includes financial figures and names, but lacks the structure or content to classify it as a specific document type related to mortgage loans."

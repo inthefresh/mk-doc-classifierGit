@@ -1,0 +1,45 @@
+page_idx,label,matched_keywords,status,reason
+0,UNCERTAIN,title insurance,UNCERTAIN,no_match
+1,CREDIT_REPORT,"transunion, experian, equifax, credit score, repositories",CONFIRMED,
+2,UNCERTAIN,title insurance,UNCERTAIN,no_match
+3,CREDIT_REPORT,"experian, credit score",CONFIRMED,
+4,UNCERTAIN,title insurance,UNCERTAIN,no_match
+5,CREDIT_REPORT,"broomall, repositories, client code, order verifications",CONFIRMED,
+6,UNCERTAIN,title insurance,UNCERTAIN,no_match
+7,CREDIT_REPORT,"broomall, transunion, experian, equifax, credit score, repositories, client code, order verifications",CONFIRMED,
+8,UNCERTAIN,title insurance,UNCERTAIN,no_match
+9,CREDIT_REPORT,"broomall, transunion, experian, equifax, repositories, client code, order verifications, xactus",CONFIRMED,
+10,UNCERTAIN,,UNCERTAIN,low_text
+11,UNCERTAIN,,UNCERTAIN,no_match
+12,URLA_1003,uniform residential loan application,CONFIRMED,
+13,CREDIT_REPORT,"broomall, transunion, experian, equifax, repositories, client code, order verifications",CONFIRMED,
+14,UNCERTAIN,title insurance,UNCERTAIN,no_match
+15,URLA_1003,uniform residential loan application,CONFIRMED,
+16,UNCERTAIN,title insurance,UNCERTAIN,no_match
+17,URLA_1003,uniform residential loan application,CONFIRMED,
+18,CREDIT_REPORT,"broomall, transunion, experian, equifax, xactus",CONFIRMED,
+19,URLA_1003,uniform residential loan application,CONFIRMED,
+20,CREDIT_REPORT,"broomall, repositories, client code, order verifications",CONFIRMED,
+21,UNCERTAIN,title insurance,UNCERTAIN,no_match
+22,URLA_1003,uniform residential loan application,CONFIRMED,
+23,CREDIT_REPORT,"broomall, experian, xactus",CONFIRMED,
+24,URLA_1003,uniform residential loan application,CONFIRMED,
+25,UNCERTAIN,,UNCERTAIN,low_text
+26,UNCERTAIN,,UNCERTAIN,no_match
+27,CREDIT_REPORT,"broomall, repositories, client code, order verifications",CONFIRMED,
+28,URLA_1003,uniform residential loan application,CONFIRMED,
+29,UNCERTAIN,,UNCERTAIN,no_match
+30,UNCERTAIN,,UNCERTAIN,no_match
+31,UNCERTAIN,experian,UNCERTAIN,no_match
+32,UNCERTAIN,title insurance,UNCERTAIN,no_match
+33,CREDIT_REPORT,"broomall, repositories, client code, order verifications",CONFIRMED,
+34,URLA_1003,uniform residential loan application,CONFIRMED,
+35,UNCERTAIN,,UNCERTAIN,no_match
+36,URLA_1003,uniform residential loan application,CONFIRMED,
+37,CREDIT_REPORT,"broomall, repositories, client code, order verifications",CONFIRMED,
+38,UNCERTAIN,,UNCERTAIN,no_match
+39,UNCERTAIN,,UNCERTAIN,low_text
+40,CREDIT_REPORT,"broomall, repositories, client code, order verifications",CONFIRMED,
+41,UNCERTAIN,title insurance,UNCERTAIN,no_match
+42,URLA_1003,uniform residential loan application,CONFIRMED,
+43,CREDIT_REPORT,"broomall, repositories, client code, order verifications",CONFIRMED,
